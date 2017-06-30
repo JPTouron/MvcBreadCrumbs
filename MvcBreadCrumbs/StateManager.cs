@@ -22,7 +22,6 @@ namespace MvcBreadCrumbs
             States.Add(newstate);
 
             return newstate;
-
         }
 
         public static void RemoveState(string id)
@@ -33,6 +32,5 @@ namespace MvcBreadCrumbs
                 States.Remove(state);
             }
         }
-
     }
 }

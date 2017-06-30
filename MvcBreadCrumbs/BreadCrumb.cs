@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -22,6 +20,7 @@ namespace MvcBreadCrumbs
                 return new HttpSessionProvider();
             }
         }
+
         public static void Add(string url, string label)
         {
             // get a key for the Url.
@@ -67,7 +66,7 @@ namespace MvcBreadCrumbs
             var updatedList = new List<StateEntry>(previousPage);
             updatedList.Reverse();
 
-            if(updatedList.Count>1)
+            if (updatedList.Count > 1)
                 return updatedList.Skip(1).First().Url;
 
             return null;
@@ -97,7 +96,7 @@ namespace MvcBreadCrumbs
                 if (string.IsNullOrEmpty(updatedList.Skip(1).First().Url))
                     return new RedirectResult(updatedList.Skip(1).First().Url);
             }
-                
+
             return null;
         }
 
@@ -112,7 +111,6 @@ namespace MvcBreadCrumbs
 
         public static string Display(string cssClassOverride = "breadcrumb")
         {
-            
             var state = StateManager.GetState(SessionProvider.SessionId);
 
             if (state.Crumbs != null && !state.Crumbs.Any())
@@ -135,19 +133,23 @@ namespace MvcBreadCrumbs
             });
             sb.Append("</ol>");
             return sb.ToString();
-
         }
-        public static string DisplayRaw()
-        {
 
+        public static string DisplayRaw(string crumbConcatenator = ">")
+        {
             var state = StateManager.GetState(SessionProvider.SessionId);
 
             if (state.Crumbs != null && !state.Crumbs.Any())
                 return "<!-- BreadCrumbs stack is empty -->";
 
-            return string.Join(" > ",
-                state.Crumbs.Select(x => "<a href=\"" + x.Url + "\">" + x.Label + "</a>").ToArray());
-
+            return string.Join("  " + crumbConcatenator + " ",
+                state.Crumbs.Select(x =>
+                {
+                    if (IsCurrentPage(x.Key))
+                        return x.Label;
+                    else
+                        return "<a href=\"" + x.Url + "\">" + x.Label + "</a>";
+                }).ToArray());
         }
 
         private static bool IsCurrentPage(int compareKey)
@@ -158,7 +160,5 @@ namespace MvcBreadCrumbs
                 .GetHashCode();
             return key == compareKey;
         }
-
     }
-
 }

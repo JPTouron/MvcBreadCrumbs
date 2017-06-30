@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MvcBreadCrumbs
+﻿namespace MvcBreadCrumbs
 {
     public interface IProvideBreadCrumbsSession
     {

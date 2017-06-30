@@ -13,7 +13,7 @@ namespace MvcBreadCrumbs
         public List<StateEntry> Crumbs { get; set; }
         public StateEntry Current { get; set; }
 
-        public void Push(ActionExecutingContext context, string label, Type resourceType )
+        public void Push(ActionExecutingContext context, string label, Type resourceType)
         {
             var key =
                 context.HttpContext.Request.Url.LocalPath
@@ -43,10 +43,28 @@ namespace MvcBreadCrumbs
                 .SetContext(context)
                 .WithUrl(context.HttpContext.Request.Url.ToString())
                 .WithLabel(ResourceHelper.GetResourceLookup(resourceType, label));
-                
+
             Crumbs.Add(Current);
         }
-        
+
+        /// <summary>
+        /// provides a way to remove a crumb from the crumbs list
+        /// </summary>
+        /// <param name="context"></param>
+        public void OnErrorRemoveCrumb(ResultExecutedContext context)
+        {
+            var key =
+                context.HttpContext.Request.Url.LocalPath
+                .ToLower()
+                .GetHashCode();
+
+            if (Crumbs.Any(x => x.Key == key))
+            {
+                var crumb = Crumbs.Single(x => x.Key == key);
+                Crumbs.Remove(crumb);
+            }
+        }
+
         public State(string cookie)
         {
             SessionCookie = cookie;
@@ -79,7 +97,6 @@ namespace MvcBreadCrumbs
             return this;
         }
 
-
         public StateEntry SetContext(ActionExecutingContext context)
         {
             Context = context;
@@ -94,12 +111,12 @@ namespace MvcBreadCrumbs
             return this;
         }
 
-        public string Controller 
-        { 
+        public string Controller
+        {
             get
             {
-                return (string) Context.RouteData.Values["controller"];
-            } 
+                return (string)Context.RouteData.Values["controller"];
+            }
         }
 
         public string Action
