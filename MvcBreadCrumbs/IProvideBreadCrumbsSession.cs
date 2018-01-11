@@ -1,7 +1,9 @@
-﻿namespace MvcBreadCrumbs
+﻿using System;
+
+namespace MvcBreadCrumbs
 {
-    public interface IProvideBreadCrumbsSession
-    {
-        string SessionId { get; }
-    }
+	public interface IProvideBreadCrumbsSession
+	{
+		string SessionId { get; }
+	}
 }
